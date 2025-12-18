@@ -127,12 +127,12 @@
             border-radius: 10px;
             margin-bottom: 2rem;
         }
-
+        
         .history-title {
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
-
+        
         .history-list {
             list-style: none;
             padding: 0;
@@ -140,29 +140,33 @@
             max-height: 200px;
             overflow-y: auto;
         }
-
+        
         .history-item {
             padding: 0.5rem;
             border-bottom: 1px solid #333;
             color: #e0e0e0;
         }
-
+        
         .history-item:last-child {
             border-bottom: none;
         }
-
+        
         .mouse-container {
             background-color: #1e1e1e;
             padding: 1.5rem;
             border-radius: 10px;
             margin-bottom: 2rem;
+            display: inline-block;
+            vertical-align: top;
+            margin-left: 2rem;
+            min-width: 300px;
         }
-
+        
         .mouse-title {
             font-size: 1.2rem;
             margin-bottom: 1rem;
         }
-
+        
         .mouse-area {
             width: 100%;
             max-width: 600px;
@@ -175,7 +179,7 @@
             margin-bottom: 1rem;
             box-sizing: border-box;
         }
-
+        
         .mouse-coordinates {
             position: absolute;
             top: 10px;
@@ -185,18 +189,56 @@
             border-radius: 3px;
             font-size: 0.9rem;
         }
-
+        
         .mouse-events {
             background-color: #333;
             padding: 1rem;
             border-radius: 5px;
             min-height: 100px;
         }
-
+        
         .event-item {
             padding: 0.3rem 0;
             color: #e0e0e0;
             font-size: 0.9rem;
+        }
+        
+        .input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .keyboard-and-history {
+            display: inline-block;
+            vertical-align: top;
+        }
+        
+        .pressed-keys {
+            background-color: #1e1e1e;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .pressed-keys-title {
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .pressed-key {
+            display: inline-block;
+            background-color: #4caf50;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+        }
+        
+        .once-pressed {
+            background-color: #ff9800 !important;
         }
         
         /* Адаптивность */
@@ -409,18 +451,28 @@
                 <div class="key arrow" data-key="ArrowDown">↓</div>
                 <div class="key arrow" data-key="ArrowRight">→</div>
             </div>
-        
-        <div class="history-container">
-            <div class="history-title">История нажатий:</div>
-            <ul class="history-list" id="historyList"></ul>
         </div>
         
-        <div class="mouse-container">
-            <div class="mouse-title">Тест мыши:</div>
-            <div class="mouse-area" id="mouseArea">
-                <div class="mouse-coordinates" id="mouseCoordinates">Курсор: X=0, Y=0</div>
+        <div class="input-container">
+            <div class="keyboard-and-history">
+                <div class="history-container">
+                    <div class="history-title">История нажатий:</div>
+                    <ul class="history-list" id="historyList"></ul>
+                </div>
+                
+                <div class="pressed-keys">
+                    <div class="pressed-keys-title">Однажды нажатые клавиши:</div>
+                    <div class="pressed-keys-container" id="pressedKeysContainer"></div>
+                </div>
             </div>
-            <div class="mouse-events" id="mouseEvents"></div>
+            
+            <div class="mouse-container">
+                <div class="mouse-title">Тест мыши:</div>
+                <div class="mouse-area" id="mouseArea">
+                    <div class="mouse-coordinates" id="mouseCoordinates">Курсор: X=0, Y=0</div>
+                </div>
+                <div class="mouse-events" id="mouseEvents"></div>
+            </div>
         </div>
     </div>
 
@@ -429,6 +481,7 @@
         const keys = document.querySelectorAll('.key');
         const historyList = document.getElementById('historyList');
         const keyMap = {};
+        const oncePressedKeys = new Set(); // Для отслеживания клавиш, которые были нажаты хотя бы раз
         
         // Map keys to their DOM elements
         keys.forEach(key => {
@@ -447,6 +500,10 @@
                 keyElement.classList.add('active');
                 pressedKeys.add(e.code);
                 
+                // Отмечаем, что клавиша была нажата хотя бы раз
+                oncePressedKeys.add(e.code);
+                keyElement.classList.add('once-pressed');
+                
                 // Add to history
                 addToHistory(getKeyName(e));
             }
@@ -458,6 +515,28 @@
                 keyElement.classList.remove('active');
                 pressedKeys.delete(e.code);
             }
+        });
+        
+        // Функция для отображения однажды нажатых клавиш
+        function updateOncePressedKeysDisplay() {
+            const container = document.getElementById('pressedKeysContainer');
+            container.innerHTML = '';
+            
+            oncePressedKeys.forEach(keyCode => {
+                const keyElement = keyMap[keyCode];
+                if (keyElement) {
+                    const keyName = getKeyName({code: keyCode, key: ''});
+                    const keyDisplay = document.createElement('span');
+                    keyDisplay.className = 'pressed-key';
+                    keyDisplay.textContent = keyName;
+                    container.appendChild(keyDisplay);
+                }
+            });
+        }
+        
+        // Обновляем отображение однажды нажатых клавиш при каждом нажатии
+        document.addEventListener('keydown', (e) => {
+            setTimeout(updateOncePressedKeysDisplay, 0);
         });
         
         // Function to get a readable key name
@@ -590,6 +669,28 @@
             }
             
             addMouseEvent(`${buttonName} (${e.offsetX}, ${e.offsetY})`);
+        });
+        
+        // Добавляем обработчик для отображения кликов мыши рядом с клавиатурой
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('#mouseArea')) return; // Пропускаем клики внутри области мыши
+            
+            let buttonName = '';
+            switch (e.button) {
+                case 0:
+                    buttonName = 'Левый клик мыши';
+                    break;
+                case 1:
+                    buttonName = 'Средний клик мыши';
+                    break;
+                case 2:
+                    buttonName = 'Правый клик мыши';
+                    break;
+            }
+            
+            // Добавляем в общую историю нажатий
+            const nowPressed = `${buttonName} (X: ${e.clientX}, Y: ${e.clientY})`;
+            addToHistory(nowPressed);
         });
         
         // Mouse wheel

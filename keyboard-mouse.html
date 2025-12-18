@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест клавиатуры и мыши</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #e0e0e0;
+        }
+
+        .back-btn {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+
+        .back-btn:hover {
+            background-color: #1e88e5;
+        }
+
+        .keyboard-container {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 0.5rem;
+            min-width: max-content;
+        }
+
+        .key {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #555;
+            border-radius: 5px;
+            padding: 0.8rem;
+            margin: 0.2rem;
+            min-width: 40px;
+            text-align: center;
+            font-size: 0.9rem;
+            transition: background-color 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 40px;
+        }
+
+        .key.active {
+            background-color: #4caf50;
+        }
+
+        .key.space {
+            min-width: 200px;
+        }
+
+        .key.tab, .key.backslash {
+            min-width: 70px;
+        }
+
+        .key.capslock {
+            min-width: 80px;
+        }
+
+        .key.enter {
+            min-width: 90px;
+        }
+
+        .key.shift {
+            min-width: 100px;
+        }
+
+        .key.ctrl, .key.alt, .key.win, .key.menu {
+            min-width: 60px;
+        }
+
+        .key.arrow {
+            min-width: 50px;
+        }
+
+        .key.fkey {
+            min-width: 55px;
+        }
+
+        .history-container {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .history-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: 0.5rem;
+            border-bottom: 1px solid #333;
+            color: #e0e0e0;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .mouse-container {
+            background-color: #1e1e1e;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+
+        .mouse-title {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        .mouse-area {
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            background-color: #333;
+            border: 2px solid #555;
+            border-radius: 5px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-sizing: border-box;
+        }
+
+        .mouse-coordinates {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: rgba(0, 0, 0.5);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 0.9rem;
+        }
+
+        .mouse-events {
+            background-color: #333;
+            padding: 1rem;
+            border-radius: 5px;
+            min-height: 100px;
+        }
+
+        .event-item {
+            padding: 0.3rem 0;
+            color: #e0e0e0;
+            font-size: 0.9rem;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 1024px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .key {
+                padding: 0.6rem;
+                font-size: 0.8rem;
+                height: 35px;
+            }
+            
+            .key.space {
+                min-width: 150px;
+            }
+            
+            .key.shift {
+                min-width: 80px;
+            }
+            
+            .mouse-area {
+                height: 300px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            p {
+                font-size: 1rem;
+            }
+            
+            .key {
+                padding: 0.5rem;
+                font-size: 0.7rem;
+                height: 30px;
+                min-width: 30px;
+            }
+            
+            .key.space {
+                min-width: 120px;
+            }
+            
+            .key.tab, .key.backslash {
+                min-width: 50px;
+            }
+            
+            .key.capslock {
+                min-width: 60px;
+            }
+            
+            .key.enter {
+                min-width: 70px;
+            }
+            
+            .key.shift {
+                min-width: 60px;
+            }
+            
+            .mouse-area {
+                height: 250px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 0.5rem;
+            }
+            
+            h1 {
+                font-size: 1.4rem;
+            }
+            
+            .keyboard-row {
+                flex-wrap: wrap;
+            }
+            
+            .key {
+                padding: 0.4rem;
+                font-size: 0.6rem;
+                height: 25px;
+                min-width: 25px;
+                margin: 0.1rem;
+            }
+            
+            .key.space {
+                min-width: 100px;
+            }
+            
+            .mouse-area {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-btn">На главную</a>
+        
+        <h1>Тест клавиатуры и мыши</h1>
+        <p>Нажимайте клавиши или двигайте/кликайте мышью. Ваши действия будут отображаться ниже.</p>
+        
+        <div class="keyboard-container">
+            <div class="keyboard-row">
+                <div class="key fkey" data-key="Escape">Esc</div>
+                <div class="key fkey" data-key="F1">F1</div>
+                <div class="key fkey" data-key="F2">F2</div>
+                <div class="key fkey" data-key="F3">F3</div>
+                <div class="key fkey" data-key="F4">F4</div>
+                <div class="key fkey" data-key="F5">F5</div>
+                <div class="key fkey" data-key="F6">F6</div>
+                <div class="key fkey" data-key="F7">F7</div>
+                <div class="key fkey" data-key="F8">F8</div>
+                <div class="key fkey" data-key="F9">F9</div>
+                <div class="key fkey" data-key="F10">F10</div>
+                <div class="key fkey" data-key="F11">F11</div>
+                <div class="key fkey" data-key="F12">F12</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key" data-key="Backquote">` ~</div>
+                <div class="key" data-key="Digit1">1 !</div>
+                <div class="key" data-key="Digit2">2 @</div>
+                <div class="key" data-key="Digit3">3 #</div>
+                <div class="key" data-key="Digit4">4 $</div>
+                <div class="key" data-key="Digit5">5 %</div>
+                <div class="key" data-key="Digit6">6 ^</div>
+                <div class="key" data-key="Digit7">7 &</div>
+                <div class="key" data-key="Digit8">8 *</div>
+                <div class="key" data-key="Digit9">9 (</div>
+                <div class="key" data-key="Digit0">0 )</div>
+                <div class="key" data-key="Minus">- _</div>
+                <div class="key" data-key="Equal">= +</div>
+                <div class="key backslash" data-key="Backspace">Backspace</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key tab" data-key="Tab">Tab</div>
+                <div class="key" data-key="KeyQ">Q</div>
+                <div class="key" data-key="KeyW">W</div>
+                <div class="key" data-key="KeyE">E</div>
+                <div class="key" data-key="KeyR">R</div>
+                <div class="key" data-key="KeyT">T</div>
+                <div class="key" data-key="KeyY">Y</div>
+                <div class="key" data-key="KeyU">U</div>
+                <div class="key" data-key="KeyI">I</div>
+                <div class="key" data-key="KeyO">O</div>
+                <div class="key" data-key="KeyP">P</div>
+                <div class="key" data-key="BracketLeft">[ {</div>
+                <div class="key" data-key="BracketRight">] }</div>
+                <div class="key" data-key="Backslash">\\ |</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key capslock" data-key="CapsLock">Caps Lock</div>
+                <div class="key" data-key="KeyA">A</div>
+                <div class="key" data-key="KeyS">S</div>
+                <div class="key" data-key="KeyD">D</div>
+                <div class="key" data-key="KeyF">F</div>
+                <div class="key" data-key="KeyG">G</div>
+                <div class="key" data-key="KeyH">H</div>
+                <div class="key" data-key="KeyJ">J</div>
+                <div class="key" data-key="KeyK">K</div>
+                <div class="key" data-key="KeyL">L</div>
+                <div class="key" data-key="Semicolon">; :</div>
+                <div class="key" data-key="Quote">' "</div>
+                <div class="key enter" data-key="Enter">Enter</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key shift" data-key="ShiftLeft">Shift</div>
+                <div class="key" data-key="KeyZ">Z</div>
+                <div class="key" data-key="KeyX">X</div>
+                <div class="key" data-key="KeyC">C</div>
+                <div class="key" data-key="KeyV">V</div>
+                <div class="key" data-key="KeyB">B</div>
+                <div class="key" data-key="KeyN">N</div>
+                <div class="key" data-key="KeyM">M</div>
+                <div class="key" data-key="Comma">, <</div>
+                <div class="key" data-key="Period">. ></div>
+                <div class="key" data-key="Slash">/ ?</div>
+                <div class="key shift" data-key="ShiftRight">Shift</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key ctrl" data-key="ControlLeft">Ctrl</div>
+                <div class="key win" data-key="MetaLeft">Win</div>
+                <div class="key alt" data-key="AltLeft">Alt</div>
+                <div class="key space" data-key="Space">Space</div>
+                <div class="key alt" data-key="AltRight">Alt</div>
+                <div class="key win" data-key="MetaRight">Win</div>
+                <div class="key menu" data-key="ContextMenu">Menu</div>
+                <div class="key ctrl" data-key="ControlRight">Ctrl</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key arrow" data-key="ArrowUp">↑</div>
+            </div>
+            
+            <div class="keyboard-row">
+                <div class="key arrow" data-key="ArrowLeft">←</div>
+                <div class="key arrow" data-key="ArrowDown">↓</div>
+                <div class="key arrow" data-key="ArrowRight">→</div>
+            </div>
+        
+        <div class="history-container">
+            <div class="history-title">История нажатий:</div>
+            <ul class="history-list" id="historyList"></ul>
+        </div>
+        
+        <div class="mouse-container">
+            <div class="mouse-title">Тест мыши:</div>
+            <div class="mouse-area" id="mouseArea">
+                <div class="mouse-coordinates" id="mouseCoordinates">Курсор: X=0, Y=0</div>
+            </div>
+            <div class="mouse-events" id="mouseEvents"></div>
+        </div>
+    </div>
+
+    <script>
+        // Keyboard functionality
+        const keys = document.querySelectorAll('.key');
+        const historyList = document.getElementById('historyList');
+        const keyMap = {};
+        
+        // Map keys to their DOM elements
+        keys.forEach(key => {
+            const keyValue = key.getAttribute('data-key');
+            keyMap[keyValue] = key;
+        });
+        
+        // Track pressed keys for combinations
+        const pressedKeys = new Set();
+        
+        document.addEventListener('keydown', (e) => {
+            e.preventDefault(); // Prevent default behavior like F5 refreshing page
+            
+            const keyElement = keyMap[e.code];
+            if (keyElement && !pressedKeys.has(e.code)) {
+                keyElement.classList.add('active');
+                pressedKeys.add(e.code);
+                
+                // Add to history
+                addToHistory(getKeyName(e));
+            }
+        });
+        
+        document.addEventListener('keyup', (e) => {
+            const keyElement = keyMap[e.code];
+            if (keyElement) {
+                keyElement.classList.remove('active');
+                pressedKeys.delete(e.code);
+            }
+        });
+        
+        // Function to get a readable key name
+        function getKeyName(event) {
+            // Special handling for some keys
+            switch (event.code) {
+                case 'ArrowUp':
+                    return 'Стрелка вверх';
+                case 'ArrowDown':
+                    return 'Стрелка вниз';
+                case 'ArrowLeft':
+                    return 'Стрелка влево';
+                case 'ArrowRight':
+                    return 'Стрелка вправо';
+                case 'ControlLeft':
+                    return 'Ctrl';
+                case 'ControlRight':
+                    return 'Ctrl';
+                case 'ShiftLeft':
+                    return 'Shift';
+                case 'ShiftRight':
+                    return 'Shift';
+                case 'AltLeft':
+                    return 'Alt';
+                case 'AltRight':
+                    return 'Alt';
+                case 'MetaLeft':
+                    return 'Win';
+                case 'MetaRight':
+                    return 'Win';
+                case 'ContextMenu':
+                    return 'Menu';
+                case 'Space':
+                    return 'Пробел';
+                case 'Tab':
+                    return 'Tab';
+                case 'CapsLock':
+                    return 'Caps Lock';
+                case 'Backspace':
+                    return 'Backspace';
+                case 'Enter':
+                    return 'Enter';
+                case 'Escape':
+                    return 'Esc';
+                case 'Insert':
+                    return 'Insert';
+                case 'Delete':
+                    return 'Delete';
+                case 'Home':
+                    return 'Home';
+                case 'End':
+                    return 'End';
+                case 'PageUp':
+                    return 'Page Up';
+                case 'PageDown':
+                    return 'Page Down';
+                case 'NumLock':
+                    return 'Num Lock';
+                default:
+                    // For letter keys, return the key value
+                    if (event.code.startsWith('Key')) {
+                        return event.key.toUpperCase();
+                    }
+                    // For digit keys
+                    if (event.code.startsWith('Digit')) {
+                        return event.key;
+                    }
+                    // For F keys
+                    if (event.code.startsWith('F') && event.code.length > 1) {
+                        return event.code;
+                    }
+                    // For other special characters
+                    return event.key;
+            }
+        }
+        
+        // Function to add to history
+        function addToHistory(keyName) {
+            const nowPressed = Array.from(pressedKeys).map(code => {
+                // Get the key name for each currently pressed key
+                const fakeEvent = { code: code, key: '' };
+                return getKeyName(fakeEvent);
+            }).join(' + ');
+            
+            // Create history item
+            const li = document.createElement('li');
+            li.className = 'history-item';
+            li.textContent = nowPressed;
+            
+            // Add to the top of the list
+            const firstChild = historyList.firstChild;
+            if (firstChild) {
+                historyList.insertBefore(li, firstChild);
+            } else {
+                historyList.appendChild(li);
+            }
+            
+            // Limit to 10 items
+            if (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+        
+        // Mouse functionality
+        const mouseArea = document.getElementById('mouseArea');
+        const mouseCoordinates = document.getElementById('mouseCoordinates');
+        const mouseEvents = document.getElementById('mouseEvents');
+        
+        // Mouse movement
+        mouseArea.addEventListener('mousemove', (e) => {
+            const rect = mouseArea.getBoundingClientRect();
+            const x = Math.round(e.clientX - rect.left);
+            const y = Math.round(e.clientY - rect.top);
+            mouseCoordinates.textContent = `Курсор: X=${x}, Y=${y}`;
+        });
+        
+        // Mouse clicks
+        mouseArea.addEventListener('mousedown', (e) => {
+            let buttonName = '';
+            switch (e.button) {
+                case 0:
+                    buttonName = 'Левый клик';
+                    break;
+                case 1:
+                    buttonName = 'Средний клик';
+                    break;
+                case 2:
+                    buttonName = 'Правый клик';
+                    break;
+            }
+            
+            addMouseEvent(`${buttonName} (${e.offsetX}, ${e.offsetY})`);
+        });
+        
+        // Mouse wheel
+        mouseArea.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const direction = e.deltaY < 0 ? 'Прокрутка вверх' : 'Прокрутка вниз';
+            addMouseEvent(direction);
+        });
+        
+        // Function to add mouse event to the list
+        function addMouseEvent(eventName) {
+            const div = document.createElement('div');
+            div.className = 'event-item';
+            div.textContent = eventName;
+            
+            // Add to the top of the list
+            const firstChild = mouseEvents.firstChild;
+            if (firstChild) {
+                mouseEvents.insertBefore(div, firstChild);
+            } else {
+                mouseEvents.appendChild(div);
+            }
+            
+            // Limit to 10 items
+            if (mouseEvents.children.length > 10) {
+                mouseEvents.removeChild(mouseEvents.lastChild);
+            }
+        }
+        
+        // Prevent context menu on mouse area
+        mouseArea.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+        });
+    </script>
+</body>
+</html>
